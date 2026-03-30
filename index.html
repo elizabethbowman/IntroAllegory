@@ -1,0 +1,801 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Animal Farm — Introduction to Allegory</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Lora:ital,wght@0,400;0,600;1,400&display=swap');
+
+  :root {
+    --barn-red: #8B1A1A;
+    --hay: #D4A017;
+    --cream: #F5EDD8;
+    --dirt: #6B4C2A;
+    --grass: #3A6B35;
+    --sky: #C8DFF5;
+    --dark: #1C1008;
+    --wood: #8C6239;
+    --correct: #3A6B35;
+    --wrong: #8B1A1A;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Lora', serif;
+    background: var(--cream);
+    color: var(--dark);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      repeating-linear-gradient(90deg, transparent, transparent 60px, rgba(139,90,43,0.04) 60px, rgba(139,90,43,0.04) 62px),
+      linear-gradient(180deg, var(--sky) 0%, #E8D5B0 100%);
+    z-index: -1;
+  }
+
+  .wrapper {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 24px 16px 60px;
+  }
+
+  .header {
+    text-align: center;
+    padding: 28px 20px 20px;
+    background: var(--barn-red);
+    border-radius: 4px 4px 0 0;
+    border: 3px solid var(--dark);
+    border-bottom: none;
+    position: relative;
+    overflow: hidden;
+  }
+  .header::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: repeating-linear-gradient(
+      0deg, transparent, transparent 8px,
+      rgba(0,0,0,0.08) 8px, rgba(0,0,0,0.08) 9px
+    );
+  }
+  .header-inner { position: relative; z-index: 1; }
+  .header h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(22px, 5vw, 38px);
+    color: var(--hay);
+    letter-spacing: 1px;
+    text-shadow: 2px 2px 0 rgba(0,0,0,0.4);
+    line-height: 1.1;
+  }
+  .header h1 span { color: white; font-style: italic; }
+  .header p {
+    color: rgba(255,255,255,0.85);
+    font-size: 14px;
+    margin-top: 6px;
+    font-style: italic;
+  }
+
+  .progress-bar-wrap {
+    background: var(--dark);
+    border: 3px solid var(--dark);
+    border-top: none;
+    border-bottom: none;
+    padding: 8px 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .progress-track {
+    flex: 1;
+    height: 14px;
+    background: rgba(255,255,255,0.15);
+    border-radius: 7px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--hay), #E8C53A);
+    border-radius: 7px;
+    transition: width 0.5s ease;
+    width: 0%;
+  }
+  .progress-label {
+    color: var(--hay);
+    font-size: 13px;
+    font-family: 'Playfair Display', serif;
+    white-space: nowrap;
+  }
+
+  .content-area {
+    background: white;
+    border: 3px solid var(--dark);
+    border-top: none;
+    border-radius: 0 0 4px 4px;
+    padding: 28px 28px 32px;
+  }
+
+  .section-label {
+    display: inline-block;
+    background: var(--barn-red);
+    color: white;
+    font-family: 'Playfair Display', serif;
+    font-size: 13px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 3px 10px;
+    border-radius: 2px;
+    margin-bottom: 10px;
+  }
+
+  /* VOCAB */
+  .vocab-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-bottom: 8px;
+  }
+  .vocab-card {
+    border: 2px solid var(--hay);
+    border-radius: 6px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+    background: var(--cream);
+  }
+  .vocab-card:hover { transform: translateY(-3px); box-shadow: 0 6px 18px rgba(0,0,0,0.12); }
+  .vocab-front {
+    padding: 14px 12px;
+    text-align: center;
+    min-height: 70px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+  }
+  .vocab-term {
+    font-family: 'Playfair Display', serif;
+    font-size: 17px;
+    font-weight: 900;
+    color: var(--barn-red);
+  }
+  .vocab-hint { font-size: 13px; color: #888; font-style: italic; }
+  .vocab-def {
+    background: var(--dark);
+    color: var(--cream);
+    padding: 10px 12px;
+    font-size: 13px;
+    line-height: 1.5;
+    min-height: 70px;
+    display: none;
+  }
+  .vocab-card.open .vocab-def { display: block; }
+  .vocab-card.open .vocab-front { background: var(--barn-red); }
+  .vocab-card.open .vocab-term { color: var(--hay); }
+  .vocab-card.open .vocab-hint { color: rgba(255,255,255,0.6); }
+  .vocab-tap-hint {
+    font-size: 13px;
+    color: #999;
+    text-align: center;
+    margin-bottom: 20px;
+    font-style: italic;
+  }
+
+  /* QUIZ */
+  .quiz-intro {
+    font-size: 13px;
+    color: #555;
+    margin-bottom: 16px;
+    font-style: italic;
+    line-height: 1.6;
+  }
+  .animal-quiz-container { display: flex; flex-direction: column; gap: 14px; }
+
+  .animal-row {
+    border: 2px solid #E0D5C5;
+    border-radius: 8px;
+    overflow: hidden;
+    transition: border-color 0.3s;
+  }
+  .animal-row.answered-correct { border-color: var(--correct); }
+  .animal-row.answered-wrong { border-color: var(--wrong); animation: shake 0.4s; }
+
+  @keyframes shake {
+    0%,100%{transform:translateX(0)} 25%{transform:translateX(-6px)} 75%{transform:translateX(6px)}
+  }
+
+  .animal-row-top {
+    display: grid;
+    grid-template-columns: 80px 1fr;
+    align-items: stretch;
+  }
+  .animal-emoji-box {
+    background: var(--cream);
+    border-right: 2px solid #E0D5C5;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 6px;
+    gap: 2px;
+  }
+  .animal-emoji { font-size: 28px; }
+  .animal-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--dirt);
+  }
+  .animal-choices {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+  .choice-btn {
+    border: none;
+    border-right: 1px solid #E0D5C5;
+    border-bottom: 1px solid #E0D5C5;
+    background: white;
+    padding: 10px 8px;
+    font-family: 'Lora', serif;
+    font-size: 13px;
+    cursor: pointer;
+    text-align: left;
+    transition: background 0.15s;
+    line-height: 1.4;
+    color: var(--dark);
+  }
+  .choice-btn:nth-child(2n) { border-right: none; }
+  .choice-btn:nth-child(3), .choice-btn:nth-child(4) { border-bottom: none; }
+  .choice-btn:hover:not(:disabled) { background: #FFF8EC; }
+  .choice-btn.correct { background: #E8F5E9; color: #1B5E20; font-weight: 600; }
+  .choice-btn.wrong { background: #FFEBEE; color: #B71C1C; }
+  .choice-btn:disabled { cursor: default; }
+
+  .animal-feedback {
+    padding: 8px 14px;
+    font-size: 13px;
+    line-height: 1.5;
+    display: none;
+    background: #F9F6F0;
+    border-top: 1px dashed #D4B896;
+    color: #444;
+  }
+  .animal-row.answered-correct .animal-feedback,
+  .animal-row.answered-wrong .animal-feedback { display: block; }
+
+  .score-tracker {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 14px;
+    background: var(--cream);
+    border: 2px solid var(--hay);
+    border-radius: 6px;
+    margin: 20px 0 6px;
+    font-size: 13px;
+  }
+  .score-tracker strong {
+    font-family: 'Playfair Display', serif;
+    font-size: 20px;
+    color: var(--barn-red);
+  }
+
+  /* ANTICIPATION */
+  .anticipation-wrap { margin-top: 20px; }
+  .statement-card {
+    border: 2px solid #E0D5C5;
+    border-radius: 8px;
+    padding: 14px 16px;
+    margin-bottom: 12px;
+    background: var(--cream);
+  }
+  .statement-text {
+    font-size: 14px;
+    font-style: italic;
+    color: var(--dark);
+    margin-bottom: 10px;
+    line-height: 1.6;
+  }
+  .agree-disagree-btns { display: flex; gap: 8px; margin-bottom: 10px; }
+  .agree-btn, .disagree-btn {
+    padding: 6px 16px;
+    border: 2px solid;
+    border-radius: 4px;
+    font-family: 'Lora', serif;
+    font-size: 13px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.15s;
+    background: white;
+  }
+  .agree-btn { border-color: var(--grass); color: var(--grass); }
+  .agree-btn.selected { background: var(--grass); color: white; }
+  .disagree-btn { border-color: var(--barn-red); color: var(--barn-red); }
+  .disagree-btn.selected { background: var(--barn-red); color: white; }
+
+  .response-area {
+    width: 100%;
+    border: 1.5px solid #C8B89A;
+    border-radius: 4px;
+    padding: 10px;
+    font-family: 'Lora', serif;
+    font-size: 13px;
+    color: var(--dark);
+    background: white;
+    resize: vertical;
+    min-height: 70px;
+    display: none;
+    transition: border-color 0.2s;
+  }
+  .response-area:focus { outline: none; border-color: var(--hay); }
+  .response-area.visible { display: block; }
+  .char-count { font-size: 13px; color: #aaa; text-align: right; margin-top: 4px; }
+
+  .divider {
+    border: none;
+    border-top: 2px dashed #D4B896;
+    margin: 24px 0;
+  }
+
+  .completion-banner {
+    display: none;
+    background: var(--grass);
+    color: white;
+    border-radius: 8px;
+    padding: 18px 20px;
+    text-align: center;
+    margin-top: 20px;
+    animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  }
+  .completion-banner.visible { display: block; }
+  @keyframes popIn {
+    from { transform: scale(0.8); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+  }
+  .completion-banner h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 22px;
+    margin-bottom: 6px;
+  }
+  .completion-banner p { font-size: 14px; opacity: 0.9; line-height: 1.6; }
+
+  /* SUBMISSION SECTION */
+  .submission-wrap {
+    display: none;
+    margin-top: 28px;
+    border: 3px solid var(--hay);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  .submission-wrap.visible { display: block; animation: popIn 0.4s ease; }
+  .submission-header {
+    background: var(--hay);
+    padding: 12px 18px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .submission-header span {
+    font-family: 'Playfair Display', serif;
+    font-size: 16px;
+    font-weight: 900;
+    color: var(--dark);
+  }
+  .submission-body { padding: 20px 20px 24px; background: #FFFDF5; }
+  .submission-body p {
+    font-size: 13px;
+    color: #555;
+    font-style: italic;
+    margin-bottom: 16px;
+    line-height: 1.6;
+  }
+  .name-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr auto;
+    gap: 10px;
+    margin-bottom: 14px;
+    align-items: end;
+  }
+  .field-group { display: flex; flex-direction: column; gap: 4px; }
+  .field-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--dirt);
+    font-family: 'Playfair Display', serif;
+  }
+  .field-input {
+    border: 2px solid #D4B896;
+    border-radius: 4px;
+    padding: 8px 10px;
+    font-family: 'Lora', serif;
+    font-size: 13px;
+    color: var(--dark);
+    background: white;
+    transition: border-color 0.2s;
+  }
+  .field-input:focus { outline: none; border-color: var(--hay); }
+  .submit-btn {
+    background: var(--barn-red);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 10px 24px;
+    font-family: 'Playfair Display', serif;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.1s;
+    white-space: nowrap;
+    align-self: end;
+  }
+  .submit-btn:hover { background: #6B1212; transform: translateY(-1px); }
+  .submit-btn:active { transform: translateY(0); }
+  .submit-btn:disabled { background: #aaa; cursor: default; transform: none; }
+
+  .submit-success {
+    display: none;
+    background: var(--grass);
+    color: white;
+    border-radius: 6px;
+    padding: 16px 18px;
+    text-align: center;
+  }
+  .submit-success.visible { display: block; animation: popIn 0.4s ease; }
+  .submit-success h4 {
+    font-family: 'Playfair Display', serif;
+    font-size: 18px;
+    margin-bottom: 6px;
+  }
+  .submit-success p { font-size: 13px; opacity: 0.9; line-height: 1.6; font-style: normal; margin-bottom: 0; }
+  .submit-receipt {
+    margin-top: 12px;
+    background: rgba(255,255,255,0.15);
+    border-radius: 4px;
+    padding: 10px 14px;
+    font-size: 13px;
+    line-height: 1.8;
+    text-align: left;
+  }
+
+  @media (max-width: 560px) {
+    .vocab-grid { grid-template-columns: 1fr 1fr; }
+    .animal-choices { grid-template-columns: 1fr; }
+    .choice-btn { border-right: none; border-bottom: 1px solid #E0D5C5; }
+    .choice-btn:last-child { border-bottom: none; }
+    .name-row { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="wrapper">
+
+  <div class="header">
+    <div class="header-inner">
+      <h1><span>Animal Farm</span> — Introduction to Allegory</h1>
+      <p>Tap, choose, and think your way through the farm before we start reading</p>
+    </div>
+  </div>
+
+  <div class="progress-bar-wrap">
+    <div class="progress-track">
+      <div class="progress-fill" id="progressFill"></div>
+    </div>
+    <div class="progress-label" id="progressLabel">0 / 3 sections</div>
+  </div>
+
+  <div class="content-area">
+
+    <!-- SECTION 1 -->
+    <div class="section-label">Section 1 — Key Terms</div>
+    <p style="font-size:14px; color:#555; margin-bottom:14px; font-style:italic; line-height:1.6;">
+      Before reading <em>Animal Farm</em>, you need three vocabulary words in your toolkit. Tap each card to flip it and reveal the definition.
+    </p>
+    <div class="vocab-grid" id="vocabGrid">
+      <div class="vocab-card" onclick="flipVocab(this, 0)">
+        <div class="vocab-front">
+          <div class="vocab-term">Fable</div>
+          <div class="vocab-hint">Tap to reveal →</div>
+        </div>
+        <div class="vocab-def">A short story — often with animal characters — that teaches a moral lesson. Think Aesop: "The Tortoise and the Hare."</div>
+      </div>
+      <div class="vocab-card" onclick="flipVocab(this, 1)">
+        <div class="vocab-front">
+          <div class="vocab-term">Satire</div>
+          <div class="vocab-hint">Tap to reveal →</div>
+        </div>
+        <div class="vocab-def">Using humor, irony, or exaggeration to expose and criticize a real-world flaw or problem — hoping society will notice and change.</div>
+      </div>
+      <div class="vocab-card" onclick="flipVocab(this, 2)">
+        <div class="vocab-front">
+          <div class="vocab-term">Allegory</div>
+          <div class="vocab-hint">Tap to reveal →</div>
+        </div>
+        <div class="vocab-def">A story where characters, events, and settings are symbols representing deeper real-world ideas — the surface story has a hidden meaning.</div>
+      </div>
+    </div>
+    <p class="vocab-tap-hint" id="vocabTapHint">Tap all three cards to continue ↓</p>
+
+    <hr class="divider">
+
+    <!-- SECTION 2 -->
+    <div class="section-label">Section 2 — Animal Symbolism</div>
+    <p class="quiz-intro">
+      In allegory, animals carry symbolic meaning. What quality does each animal <em>most commonly</em> represent? Choose the best match — but there may be more than one right answer culturally, so read carefully!
+    </p>
+    <div class="score-tracker">
+      <span>Score: </span><strong id="scoreDisplay">0</strong><span id="scoreTotal"> / 0</span>
+      <span style="margin-left:auto; font-size:13px; color:#888; font-style:italic;" id="scoreMsg">Answer each animal below</span>
+    </div>
+    <div class="animal-quiz-container" id="animalQuiz"></div>
+
+    <hr class="divider">
+
+    <!-- SECTION 3 -->
+    <div class="anticipation-wrap">
+      <div class="section-label">Section 3 — Anticipation</div>
+      <p style="font-size:14px; color:#555; margin-bottom:16px; font-style:italic; line-height:1.6;">
+        Pick <strong>one</strong> statement below. Tap Agree or Disagree, then write 2–3 sentences explaining your thinking with a real-world example.
+      </p>
+      <div id="anticipationCards"></div>
+    </div>
+
+    <div class="completion-banner" id="completionBanner">
+      <h3>🐾 You're ready for the farm!</h3>
+      <p>You've mastered the vocabulary, explored animal symbolism, and shared your perspective.<br>Now let's see how Orwell uses all of this in <em>Animal Farm</em>.</p>
+    </div>
+
+    <!-- SUBMISSION SECTION -->
+    <div class="submission-wrap" id="submissionWrap">
+      <div class="submission-header">
+        <span>📬 Submit Your Work</span>
+      </div>
+      <div class="submission-body">
+        <p>Enter your name and period, then click Submit to send your completed activity to your teacher.</p>
+        <div class="name-row">
+          <div class="field-group">
+            <label class="field-label" for="studentName">Full Name</label>
+            <input class="field-input" type="text" id="studentName" placeholder="First Last" />
+          </div>
+          <div class="field-group">
+            <label class="field-label" for="studentPeriod">Period</label>
+            <input class="field-input" type="text" id="studentPeriod" placeholder="e.g. 3" style="max-width:120px;" />
+          </div>
+          <button class="submit-btn" id="submitBtn" onclick="handleSubmit()">Submit →</button>
+        </div>
+        <div id="submitError" style="color:var(--barn-red);font-size:13px;margin-top:-6px;margin-bottom:10px;display:none;">Please enter your full name and period before submitting.</div>
+        <div class="submit-success" id="submitSuccess">
+          <h4>✅ Submitted!</h4>
+          <p>Your activity has been recorded. Your teacher will review it shortly.</p>
+          <div class="submit-receipt" id="submitReceipt"></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  let vocabFlipped = [false, false, false];
+  let quizAnswered = 0;
+  let quizCorrect = 0;
+  let anticipationDone = false;
+  let selectedStatement = null;
+  const TOTAL_SECTIONS = 3;
+  let sectionsComplete = [false, false, false];
+
+  function flipVocab(card, idx) {
+    card.classList.toggle('open');
+    if (!vocabFlipped[idx]) {
+      vocabFlipped[idx] = true;
+      if (vocabFlipped.every(Boolean)) {
+        var hint = document.getElementById('vocabTapHint');
+        hint.textContent = '✓ All terms unlocked — scroll down to continue';
+        hint.style.color = '#3A6B35';
+        markSection(0);
+      }
+    }
+  }
+
+  var animals = [
+    { emoji: '🐷', name: 'Pig', choices: ['Gluttony & greed', 'Wisdom & teaching', 'Courage in battle', 'Loyalty & friendship'], correct: 0, feedback: '✅ Pigs often symbolize greed, excess, or corruption — perfect for Animal Farm\'s power-hungry leaders.' },
+    { emoji: '🦊', name: 'Fox', choices: ['Brute strength', 'Cunning & deception', 'Innocence & purity', 'Patience & endurance'], correct: 1, feedback: '✅ Foxes are the tricksters of folklore — clever, sly, and not always trustworthy.' },
+    { emoji: '🦉', name: 'Owl', choices: ['Cowardice & hiding', 'Laziness & sloth', 'Wisdom & knowledge', 'Chaos & confusion'], correct: 2, feedback: '✅ Owls have symbolized wisdom since ancient Greece — associated with Athena, goddess of wisdom.' },
+    { emoji: '🐐', name: 'Goat', choices: ['Stubbornness & independence', 'Loyalty to authority', 'Wealth & prosperity', 'Silence & secrecy'], correct: 0, feedback: '✅ Goats are famously independent and hard to herd — symbolizing rebelliousness or being an outsider.' },
+    { emoji: '🐦', name: 'Crow/Raven', choices: ['Hope & new beginnings', 'Omen, death & mystery', 'Peaceful resolution', 'Hard work & labor'], correct: 1, feedback: '✅ Ravens and crows have long been linked to omens, death, and the unknown in Western folklore.' },
+    { emoji: '🐱', name: 'Cat', choices: ['Humble servitude', 'Independence & self-interest', 'Fierce protection', 'Blind obedience'], correct: 1, feedback: '✅ Cats are notoriously self-serving — they show up when it benefits them and disappear when it doesn\'t.' },
+    { emoji: '🦁', name: 'Lion', choices: ['Sneakiness & cunning', 'Cowardice under pressure', 'Pride, power & royalty', 'Mindless following'], correct: 2, feedback: '✅ The lion is the "king of beasts" — a near-universal symbol of strength, power, and royal authority.' },
+    { emoji: '🐺', name: 'Wolf', choices: ['Generosity & sharing', 'Predatory greed or danger', 'Childlike innocence', 'Democratic leadership'], correct: 1, feedback: '✅ Wolves typically represent predatory danger, ruthlessness, or an enemy lurking at the edges.' },
+    { emoji: '🐔', name: 'Chicken', choices: ['Cowardice & fearfulness', 'Fierce independence', 'Royal authority', 'Spiritual wisdom'], correct: 0, feedback: '✅ "Chicken" is literally slang for cowardly — the symbolic association goes way back.' },
+    { emoji: '🐕', name: 'Dog', choices: ['Treachery & betrayal', 'Loyalty & obedience', 'Greed & hoarding', 'Mystery & the occult'], correct: 1, feedback: '✅ Dogs are "man\'s best friend" — symbols of loyalty, devotion, and sometimes blind obedience.' },
+    { emoji: '🦅', name: 'Eagle', choices: ['Timidity & retreat', 'Deceptive cunning', 'Freedom, power & vision', 'Laziness & comfort'], correct: 2, feedback: '✅ Eagles soar above all — symbolizing freedom, vision, national power (think: the US seal).' },
+    { emoji: '🐴', name: 'Horse', choices: ['Hard work & endurance', 'Intellectual genius', 'Wealth & greed', 'Quiet rebellion'], correct: 0, feedback: '✅ Horses symbolize hard work, strength, and noble endurance — qualities that matter a LOT in Animal Farm.' },
+    { emoji: '🐀', name: 'Rat', choices: ['Generosity & kindness', 'Betrayal & sneakiness', 'Leadership & vision', 'Playful mischief'], correct: 1, feedback: '✅ Rats symbolize betrayal, filth, or sneakiness — "rat" is even a verb meaning to betray someone.' }
+  ];
+
+  function buildQuiz() {
+    var container = document.getElementById('animalQuiz');
+    document.getElementById('scoreTotal').textContent = ' / ' + animals.length;
+    animals.forEach(function(animal, i) {
+      var row = document.createElement('div');
+      row.className = 'animal-row';
+      row.id = 'animal-' + i;
+      var choicesHTML = animal.choices.map(function(c, ci) {
+        return '<button class="choice-btn" onclick="answerAnimal(' + i + ', ' + ci + ', this)">' + c + '</button>';
+      }).join('');
+      row.innerHTML =
+        '<div class="animal-row-top">' +
+          '<div class="animal-emoji-box">' +
+            '<div class="animal-emoji">' + animal.emoji + '</div>' +
+            '<div class="animal-name">' + animal.name + '</div>' +
+          '</div>' +
+          '<div class="animal-choices" id="choices-' + i + '">' + choicesHTML + '</div>' +
+        '</div>' +
+        '<div class="animal-feedback" id="feedback-' + i + '">' + animal.feedback + '</div>';
+      container.appendChild(row);
+    });
+  }
+
+  function answerAnimal(animalIdx, choiceIdx, btn) {
+    var row = document.getElementById('animal-' + animalIdx);
+    if (row.classList.contains('answered-correct') || row.classList.contains('answered-wrong')) return;
+    var allBtns = document.querySelectorAll('#choices-' + animalIdx + ' .choice-btn');
+    allBtns.forEach(function(b) { b.disabled = true; });
+    var isCorrect = choiceIdx === animals[animalIdx].correct;
+    if (isCorrect) {
+      btn.classList.add('correct');
+      row.classList.add('answered-correct');
+      quizCorrect++;
+    } else {
+      btn.classList.add('wrong');
+      row.classList.add('answered-wrong');
+      allBtns.forEach(function(b, ci) {
+        if (ci === animals[animalIdx].correct) b.classList.add('correct');
+      });
+      document.getElementById('feedback-' + animalIdx).innerHTML =
+        '❌ Not quite. The answer is: ' + animals[animalIdx].feedback.replace('✅ ', '');
+    }
+    quizAnswered++;
+    document.getElementById('scoreDisplay').textContent = quizCorrect;
+    document.getElementById('scoreMsg').textContent = quizAnswered + ' of ' + animals.length + ' answered';
+    if (quizAnswered === animals.length) {
+      markSection(1);
+      var pct = Math.round((quizCorrect / animals.length) * 100);
+      document.getElementById('scoreMsg').textContent = 'Done! ' + pct + '% — ' + (pct >= 80 ? '🎉 Great job!' : 'Good effort!');
+    }
+    updateProgress();
+  }
+
+  var statements = [
+    { text: 'Those in power always end up abusing it — it\'s just human nature.', context: 'Think about leaders in history, school, sports, or politics.' },
+    { text: 'Ordinary people can change the world if they work together.', context: 'Think about social movements, communities, or moments of collective action.' },
+    { text: 'It\'s easier to follow a leader than to think for yourself.', context: 'Think about why people go along with things they might privately disagree with.' }
+  ];
+
+  function buildAnticipation() {
+    var container = document.getElementById('anticipationCards');
+    statements.forEach(function(stmt, i) {
+      var card = document.createElement('div');
+      card.className = 'statement-card';
+      card.id = 'stmt-' + i;
+      card.innerHTML =
+        '<div class="statement-text">"' + stmt.text + '"</div>' +
+        '<div style="font-size:13px;color:#888;margin-bottom:8px;font-style:italic;">' + stmt.context + '</div>' +
+        '<div class="agree-disagree-btns">' +
+          '<button class="agree-btn" id="agree-' + i + '" onclick="selectPosition(' + i + ', \'agree\')">👍 Agree</button>' +
+          '<button class="disagree-btn" id="disagree-' + i + '" onclick="selectPosition(' + i + ', \'disagree\')">👎 Disagree</button>' +
+        '</div>' +
+        '<textarea class="response-area" id="response-' + i + '" placeholder="Explain your thinking — give a real-world example to back it up (2–3 sentences)..." maxlength="400" oninput="checkAnticipation(' + i + ', this)"></textarea>' +
+        '<div class="char-count" id="charcount-' + i + '" style="display:none;"></div>';
+      container.appendChild(card);
+    });
+  }
+
+  function selectPosition(stmtIdx, position) {
+    var agreeBtn = document.getElementById('agree-' + stmtIdx);
+    var disagreeBtn = document.getElementById('disagree-' + stmtIdx);
+    agreeBtn.classList.remove('selected');
+    disagreeBtn.classList.remove('selected');
+    if (position === 'agree') agreeBtn.classList.add('selected');
+    else disagreeBtn.classList.add('selected');
+    var ta = document.getElementById('response-' + stmtIdx);
+    ta.classList.add('visible');
+    document.getElementById('charcount-' + stmtIdx).style.display = 'block';
+    ta.focus();
+    selectedStatement = stmtIdx;
+  }
+
+  function checkAnticipation(stmtIdx, ta) {
+    var count = ta.value.length;
+    document.getElementById('charcount-' + stmtIdx).textContent = count + ' / 400 characters';
+    var positionChosen = document.getElementById('agree-' + stmtIdx).classList.contains('selected') ||
+                         document.getElementById('disagree-' + stmtIdx).classList.contains('selected');
+    if (positionChosen && count >= 40 && !anticipationDone) {
+      anticipationDone = true;
+      markSection(2);
+    }
+    updateProgress();
+  }
+
+  function markSection(idx) {
+    if (!sectionsComplete[idx]) {
+      sectionsComplete[idx] = true;
+      updateProgress();
+    }
+  }
+
+  function updateProgress() {
+    var done = sectionsComplete.filter(Boolean).length;
+    var pct = (done / TOTAL_SECTIONS) * 100;
+    document.getElementById('progressFill').style.width = pct + '%';
+    document.getElementById('progressLabel').textContent = done + ' / ' + TOTAL_SECTIONS + ' sections';
+    if (done === TOTAL_SECTIONS) {
+      document.getElementById('completionBanner').classList.add('visible');
+      document.getElementById('progressFill').style.background = 'linear-gradient(90deg, #3A6B35, #5EA856)';
+      document.getElementById('submissionWrap').classList.add('visible');
+      setTimeout(function() {
+        document.getElementById('submissionWrap').scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 400);
+    }
+  }
+
+  function handleSubmit() {
+    var name = document.getElementById('studentName').value.trim();
+    var period = document.getElementById('studentPeriod').value.trim();
+    var errEl = document.getElementById('submitError');
+    if (!name || !period) {
+      errEl.style.display = 'block';
+      return;
+    }
+    errEl.style.display = 'none';
+
+    // Collect anticipation response
+    var anticipationSummary = 'Not completed';
+    for (var i = 0; i < statements.length; i++) {
+      var agreeSelected = document.getElementById('agree-' + i) && document.getElementById('agree-' + i).classList.contains('selected');
+      var disagreeSelected = document.getElementById('disagree-' + i) && document.getElementById('disagree-' + i).classList.contains('selected');
+      var responseEl = document.getElementById('response-' + i);
+      if ((agreeSelected || disagreeSelected) && responseEl && responseEl.value.trim().length > 0) {
+        var stance = agreeSelected ? 'Agreed' : 'Disagreed';
+        anticipationSummary = 'Statement ' + (i + 1) + ' — ' + stance + ': "' + responseEl.value.trim() + '"';
+        break;
+      }
+    }
+
+    var timestamp = new Date().toLocaleString('en-US', { dateStyle: 'medium', timeStyle: 'short' });
+    var pct = Math.round((quizCorrect / animals.length) * 100);
+
+    // Build receipt
+    var receipt =
+      '👤 Name: ' + name + '\n' +
+      '📅 Period: ' + period + '\n' +
+      '🕐 Submitted: ' + timestamp + '\n' +
+      '🐾 Quiz Score: ' + quizCorrect + ' / ' + animals.length + ' (' + pct + '%)\n' +
+      '✍️ Anticipation: ' + anticipationSummary;
+
+    document.getElementById('submitReceipt').style.whiteSpace = 'pre-line';
+    document.getElementById('submitReceipt').textContent = receipt;
+
+    // Disable form
+    document.getElementById('studentName').disabled = true;
+    document.getElementById('studentPeriod').disabled = true;
+    document.getElementById('submitBtn').disabled = true;
+    document.getElementById('submitBtn').textContent = 'Submitted ✓';
+
+    document.getElementById('submitSuccess').classList.add('visible');
+    document.getElementById('submitSuccess').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+
+  buildQuiz();
+  buildAnticipation();
+</script>
+</body>
+</html>
